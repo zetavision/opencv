@@ -77,6 +77,23 @@ static CvWinProperties* global_control_panel = NULL;
 //end static and global
 
 
+
+void cvAdjustWindowPosQt( const char * name, int xp, int xwp, int yp, int yhp )
+{
+    int cx,cy;
+    QDesktopWidget* pDeskWid = QApplication::desktop() ;
+    QRect ScreenGeo = pDeskWid->screenGeometry();  // needs  #include <QDesktopWidget>
+    cx = ScreenGeo.width();
+    cy = ScreenGeo.height();
+    int    x = 0.01 * ( xp * cx );
+    int    y = 0.01 * ( yp * cy );
+    int neww = 0.01 * (xwp * cx );
+    int newh = 0.01 * (yhp * cy );
+    cvMoveWindow( name, x, y );
+    cvResizeWindow( name, neww, newh );   
+}
+
+
 CV_IMPL CvFont cvFontQt(const char* nameFont, int pointSize,CvScalar color,int weight,int style, int spacing)
 {
     /*
@@ -1827,7 +1844,12 @@ bool CvWindow::isOpenGl()
 
 void CvWindow::setViewportSize(QSize _size)
 {
-    myView->getWidget()->resize(_size);
+    // myView->getWidget()->resize(_size);
+    // myView->setSize(_size);
+    QWidget* view = myView->getWidget();
+    int dx = _size.width();
+    int dy = _size.height();
+    view->parentWidget()->resize(dx-7, dy);
     myView->setSize(_size);
 }
 
